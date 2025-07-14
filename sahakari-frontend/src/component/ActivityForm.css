@@ -1,0 +1,79 @@
+.activity-form {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 28px 32px;
+  background: #f0fdfd;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 170, 170, 0.2);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #004d4d;
+}
+
+.activity-form h2 {
+  text-align: center;
+  margin-bottom: 28px;
+  font-weight: 700;
+  color: #006666;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px 28px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* .form-group input {
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1.8px solid #80d4d4;
+  outline-offset: 2px;
+  transition: border-color 0.3s ease;
+} */
+.activity-input {
+  padding: 10px 14px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: 1.8px solid #80d4d4;
+  outline-offset: 2px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #ffffff;
+}
+
+.activity-input:focus {
+  border-color: #00cccc;
+  box-shadow: 0 0 6px rgba(0, 204, 204, 0.4);
+}
+
+.form-group input:focus {
+  border-color: #008080;
+}
+
+.submit-btn {
+  margin-top: 30px;
+  width: 100%;
+  padding: 14px 0;
+  background-color: #006666;
+  border: none;
+  border-radius: 10px;
+  color: #e0f7f7;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #004d4d;
+}

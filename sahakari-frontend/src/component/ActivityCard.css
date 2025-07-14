@@ -1,0 +1,25 @@
+.activity-card {
+  background: white;
+  padding: 18px 24px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  transition: box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.activity-card:hover {
+  box-shadow: 0 6px 16px rgb(0 0 0 / 0.15);
+}
+
+.activity-card h3 {
+  margin: 0 0 8px 0;
+  color: #006666;
+}
+
+.activity-card p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.3;
+}
