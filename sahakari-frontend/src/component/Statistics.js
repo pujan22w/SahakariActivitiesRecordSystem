@@ -104,7 +104,7 @@ const Statistics = () => {
       <div className="chart-section">
         <h3>Gender Participation</h3>
         {maleCount + femaleCount > 0 ? (
-          <div style={{ width: "300px", height: "300px", margin: "0 auto" }}>
+          <div style={{ width: "400px", height: "400px", margin: "0 auto" }}>
             <Pie data={pieChartData} />
           </div>
         ) : (
@@ -114,7 +114,7 @@ const Statistics = () => {
 
       <div className="chart-section">
         <h3>Age Group Distribution</h3>
-        <div style={{ width: "500px", height: "300px", margin: "0 auto" }}>
+        <div style={{ width: "600px", height: "300px", margin: "0 auto" }}>
           <Bar
             data={barChartData}
             options={{ responsive: true, maintainAspectRatio: false }}

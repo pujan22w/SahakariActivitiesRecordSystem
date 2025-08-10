@@ -8,6 +8,11 @@ const ActivitiesList = () => {
   const [activities, setActivities] = useState([]);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [editingParticipant, setEditingParticipant] = useState(null);
+  const [branches, setBranches] = useState([]);
+  const [masterActivities, setMasterActivities] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [userRole, setUserRole] = useState("");
+
   const [formData, setFormData] = useState({
     fullName: "",
     age: "",
@@ -20,30 +25,78 @@ const ActivitiesList = () => {
   });
 
   useEffect(() => {
-    fetchActivities();
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        setUserRole(payload.role || "");
+      } catch {
+        setUserRole("");
+      }
+    }
   }, []);
+
+  useEffect(() => {
+    if (userRole === "admin") {
+      fetchBranches();
+      fetchMasterActivities();
+    }
+  }, [userRole]);
+
+  useEffect(() => {
+    fetchActivities();
+  }, [selectedBranch]);
+
+  const fetchBranches = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:5000/api/users/branches", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(res);
+      setBranches(res.data);
+    } catch (err) {
+      console.error("Failed to fetch branches", err);
+    }
+  };
+
+  const fetchMasterActivities = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        "http://localhost:5000/api/master-activities",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setMasterActivities(res.data);
+    } catch (err) {
+      console.error("Failed to fetch master activities", err);
+    }
+  };
 
   const fetchActivities = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/activities");
+      const params = selectedBranch ? { branchId: selectedBranch } : {};
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:5000/api/activities", {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(res);
       const grouped = res.data.reduce((acc, curr) => {
-        if (!acc[curr.activityName]) acc[curr.activityName] = [];
-        acc[curr.activityName].push(curr);
+        const key = curr.masterActivityId?._id || "Unknown Activity";
+        if (!acc[key])
+          acc[key] = {
+            masterActivity: curr.masterActivityId,
+            participants: [],
+          };
+        acc[key].participants.push(curr);
         return acc;
       }, {});
-      const groupedArr = Object.entries(grouped).map(
-        ([activityName, participants]) => ({
-          activityName,
-          participants,
-        })
-      );
-      setActivities(groupedArr);
-      if (selectedActivity) {
-        const updated = groupedArr.find(
-          (a) => a.activityName === selectedActivity.activityName
-        );
-        setSelectedActivity(updated || null);
-      }
+
+      setActivities(Object.values(grouped));
+      setSelectedActivity(null);
     } catch (err) {
       toast.error("❌ Failed to fetch activities");
       console.error("Error fetching activities:", err);
@@ -117,21 +170,40 @@ const ActivitiesList = () => {
 
   return (
     <div className="activities-page-container">
-      {/* Activities List */}
+      {userRole === "admin" && (
+        <div className="branch-filter-container">
+          <select
+            value={selectedBranch}
+            onChange={(e) => setSelectedBranch(e.target.value)}
+            className="branch-select"
+          >
+            <option value="">-- Show All Branches --</option>
+            {branches.map((branch) => (
+              <option key={branch._id} value={branch._id}>
+                {branch.username}
+              </option>
+            ))}
+          </select>
+          <button className="filter-btn" onClick={fetchActivities}>
+            🔍 Filter Activities
+          </button>
+        </div>
+      )}
+
       <div className="activities-cards-list">
         <h2>Activities</h2>
         {activities.length === 0 && <p>No activities found...</p>}
-        {activities.map((activity) => (
+        {activities.map((activity, idx) => (
           <div
-            key={activity.activityName}
+            key={idx}
             className={`activity-card ${
-              selectedActivity?.activityName === activity.activityName
-                ? "selected"
-                : ""
+              selectedActivity === activity ? "selected" : ""
             }`}
             onClick={() => setSelectedActivity(activity)}
           >
-            <h3>{activity.activityName}</h3>
+            <h3>
+              {activity.masterActivity?.activityName || "Unknown Activity"}
+            </h3>
             <p>
               Participants: <strong>{activity.participants.length}</strong>
             </p>
@@ -139,39 +211,42 @@ const ActivitiesList = () => {
         ))}
       </div>
 
-      {/* Participant Details */}
       <div className="activity-details-panel">
         {!selectedActivity ? (
           <p>Select an activity to view participants</p>
         ) : editingParticipant ? (
-          // Edit Form
           <div className="edit-form-container">
             <button className="back-button" onClick={cancelEdit}>
               ← Cancel Edit
             </button>
             <h2>Edit Participant</h2>
             <form onSubmit={handleUpdate} className="edit-form">
-              <label>
-                Full Name:
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  required
-                />
-              </label>
-              <label>
-                Age:
-                <input
-                  type="number"
-                  name="age"
-                  min="0"
-                  value={formData.age}
-                  onChange={handleInputChange}
-                  required
-                />
-              </label>
+              {[
+                "fullName",
+                "age",
+                "membershipNumber",
+                "address",
+                "byWhom",
+                "date",
+                "phoneNumber",
+              ].map((field) => (
+                <label key={field}>
+                  {field.replace(/([A-Z])/g, " $1").toUpperCase()}:
+                  <input
+                    type={
+                      field === "date"
+                        ? "date"
+                        : field === "age"
+                        ? "number"
+                        : "text"
+                    }
+                    name={field}
+                    value={formData[field]}
+                    onChange={handleInputChange}
+                    required={["fullName", "age"].includes(field)}
+                  />
+                </label>
+              ))}
               <label>
                 Gender:
                 <select
@@ -186,51 +261,6 @@ const ActivitiesList = () => {
                   <option value="Other">Other</option>
                 </select>
               </label>
-              <label>
-                Membership Number:
-                <input
-                  type="text"
-                  name="membershipNumber"
-                  value={formData.membershipNumber}
-                  onChange={handleInputChange}
-                />
-              </label>
-              <label>
-                Address:
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                />
-              </label>
-              <label>
-                By Whom:
-                <input
-                  type="text"
-                  name="byWhom"
-                  value={formData.byWhom}
-                  onChange={handleInputChange}
-                />
-              </label>
-              <label>
-                Date:
-                <input
-                  type="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                />
-              </label>
-              <label>
-                Phone Number:
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
-                />
-              </label>
               <button type="submit" className="save-button">
                 Save Changes
               </button>
@@ -244,55 +274,64 @@ const ActivitiesList = () => {
             >
               ← Back to Activities
             </button>
-            <h2>{selectedActivity.activityName} - Participants</h2>
-            <div className="participants-cards-container">
+            <h2>
+              {selectedActivity.masterActivity?.activityName ||
+                "Unknown Activity"}{" "}
+              - Participants
+            </h2>
+            <div className="participants-table-container">
               {selectedActivity.participants.length === 0 ? (
                 <p>No participants found.</p>
               ) : (
-                selectedActivity.participants.map((p) => (
-                  <div key={p._id} className="participant-card">
-                    <h3>{p.fullName}</h3>
-                    <p>
-                      <strong>Gender:</strong> {p.gender}
-                    </p>
-                    <p>
-                      <strong>Age:</strong> {p.age}
-                    </p>
-                    <p>
-                      <strong>Membership No.:</strong>{" "}
-                      {p.membershipNumber || "-"}
-                    </p>
-                    <p>
-                      <strong>Address:</strong> {p.address || "-"}
-                    </p>
-                    <p>
-                      <strong>Date:</strong>{" "}
-                      {p.date ? new Date(p.date).toLocaleDateString() : "-"}
-                    </p>
-                    <p>
-                      <strong>Phone:</strong> {p.phoneNumber || "-"}
-                    </p>
-                    <p>
-                      <strong>By Whom:</strong> {p.byWhom || "-"}
-                    </p>
-                    <div className="btn-group">
-                      <button
-                        className="edit-btn"
-                        onClick={() => startEdit(p)}
-                        aria-label={`Edit ${p.fullName}`}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDelete(p._id)}
-                        aria-label={`Delete ${p.fullName}`}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))
+                <table className="participants-table">
+                  <thead>
+                    <tr>
+                      <th>Full Name</th>
+                      <th>Gender</th>
+                      <th>Age</th>
+                      <th>Membership No.</th>
+                      <th>Address</th>
+                      <th>Date</th>
+                      <th>Phone</th>
+                      <th>By Whom</th>
+                      {userRole === "admin" && <th>Branch</th>}
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedActivity.participants.map((p) => (
+                      <tr key={p._id}>
+                        <td>{p.fullName}</td>
+                        <td>{p.gender}</td>
+                        <td>{p.age}</td>
+                        <td>{p.membershipNumber || "-"}</td>
+                        <td>{p.address || "-"}</td>
+                        <td>
+                          {p.date ? new Date(p.date).toLocaleDateString() : "-"}
+                        </td>
+                        <td>{p.phoneNumber || "-"}</td>
+                        <td>{p.byWhom || "-"}</td>
+                        {userRole === "admin" && (
+                          <td>{p.branchId?.username || "-"}</td>
+                        )}
+                        <td>
+                          <button
+                            className="edit-btn"
+                            onClick={() => startEdit(p)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="delete-btn"
+                            onClick={() => handleDelete(p._id)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </div>
           </>

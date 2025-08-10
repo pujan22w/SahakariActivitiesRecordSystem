@@ -3,59 +3,64 @@
   justify-content: space-between;
   align-items: center;
   background-color: #2874a6;
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1.2rem;
   color: white;
   position: relative;
+  flex-wrap: wrap;
 }
 
 .navbar-logo {
-  display: flex;
-  align-items: center;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: bold;
 }
 
 .navbar-links {
   display: flex;
   list-style: none;
-  gap: 4rem;
-  font-size: 1.1rem;
+  gap: 2.5rem;
+  font-size: 1.05rem;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
 
 .navbar-links li a {
   color: white;
   text-decoration: none;
   font-weight: 500;
-  cursor: pointer;
+  position: relative;
+}
+
+.notification-badge {
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 11px;
+  position: absolute;
+  top: -6px;
+  right: -10px;
 }
 
 .user-dropdown {
-  position: relative; /* This anchors the absolute logout button */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end; /* Align to the right side */
+  position: relative;
 }
 
 .username {
   cursor: pointer;
-  user-select: none;
   font-weight: bold;
-  color: #ffffff;
+  user-select: none;
 }
 
 .logout-btn {
   position: absolute;
-  top: 200%; /* Push below the username */
-  right: 0; /* Align to right edge */
-  margin-top: 5px;
+  top: 130%;
+  right: 0;
   background-color: #e74c3c;
   color: white;
-  padding: 6px 14px;
+  padding: 6px 12px;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
   font-weight: bold;
   z-index: 1000;
   transition: background-color 0.2s ease;
@@ -65,13 +70,43 @@
   background-color: #c0392b;
 }
 
-.navbar-hamburger {
-  display: none;
-  font-size: 1.6rem;
+.create-dropdown {
+  position: relative;
   cursor: pointer;
 }
 
-@media (max-width: 768px) {
+.create-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  z-index: 1000;
+  border-radius: 4px;
+  min-width: 160px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.create-dropdown-menu a {
+  display: block;
+  color: black !important;
+  padding: 6px 0;
+  text-decoration: none;
+}
+
+.create-dropdown-menu a:hover {
+  color: #007bff;
+}
+
+.navbar-hamburger {
+  display: none;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* ✅ Mobile / Tablet Responsive */
+@media (max-width: 1324px) {
   .navbar-hamburger {
     display: block;
   }
@@ -80,20 +115,51 @@
     display: none;
     flex-direction: column;
     position: absolute;
-    top: 58px;
+    top: 100%;
     left: 0;
     width: 100%;
     background-color: #2874a6;
     padding: 1rem 0;
     z-index: 99;
+    gap: 1rem;
   }
 
   .navbar-links.active {
     display: flex;
+    gap: 2rem;
   }
 
   .navbar-links li {
-    margin: 0.5rem 0;
     text-align: center;
+    width: 100%;
+  }
+  .navbar-links li a {
+    font-size: 21px;
+  }
+  .user-dropdown,
+  .create-dropdown {
+    width: 100%;
+    text-align: center;
+  }
+  .create-link {
+    font-size: 21px;
+  }
+  .logout-btn {
+    position: static;
+    margin: 0.5rem auto 0;
+    display: inline-block;
+  }
+  .username {
+    font-size: 21px;
+  }
+  .create-dropdown-menu {
+    position: static;
+    background: #ffffff;
+    margin-top: 8px;
+    box-shadow: none;
+  }
+
+  .create-dropdown-menu a {
+    padding: 8px 12px;
   }
 }

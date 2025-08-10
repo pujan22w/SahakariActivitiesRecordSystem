@@ -10,8 +10,16 @@ import ReportSummary from "./component/ReportSummary";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Login from "./component/Login";
+import CreateMasterActivityForm from "./component/CreateActivity";
+import RegisterUserForm from "./component/RegisterUserForm";
+import ActivityLogs from "./component/ActivitiesLogs";
+import AdminSendNotification from "./component/AdminSendNotification";
+import BranchNotifications from "./component/BranchNotification";
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activities, setActivities] = useState([]);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -19,12 +27,7 @@ function App() {
       setIsAuthenticated(true);
     }
   }, []);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // State to hold selected activity for editing
-  const [selectedActivity, setSelectedActivity] = useState(null);
-
-  // Fetch all activities from backend
   const fetchActivities = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/activities");
@@ -33,9 +36,14 @@ function App() {
       console.error("Failed to fetch activities:", error);
     }
   };
+
+  // ✅ Optional: Fetch activities only if authenticated
   useEffect(() => {
-    fetchActivities();
-  }, []);
+    if (isAuthenticated) {
+      fetchActivities();
+    }
+  }, [isAuthenticated]);
+
   return (
     <>
       <Router>
@@ -89,6 +97,47 @@ function App() {
             }
           />
           <Route
+            path="/register-user"
+            element={
+              isAuthenticated ? (
+                <RegisterUserForm />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
+          <Route
+            path="/admin-send-notification"
+            element={
+              isAuthenticated ? (
+                <AdminSendNotification />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
+          <Route
+            path="/branch-notifications"
+            element={
+              isAuthenticated ? (
+                <BranchNotifications />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
+
+          <Route
+            path="/create-master-activity"
+            element={
+              isAuthenticated ? (
+                <CreateMasterActivityForm />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
+          <Route
             path="/report-summary"
             element={
               isAuthenticated ? (
@@ -98,13 +147,24 @@ function App() {
               )
             }
           />
+          <Route
+            path="/activity-logs"
+            element={
+              isAuthenticated ? (
+                <ActivityLogs />
+              ) : (
+                <Login setIsAuthenticated={setIsAuthenticated} />
+              )
+            }
+          />
         </Routes>
       </Router>
+
       <ToastContainer
         position="top-center"
         autoClose={1000}
-        hideProgressBar={true}
-        closeOnClick={true}
+        hideProgressBar
+        closeOnClick
         pauseOnHover={false}
         draggable={false}
         closeButton={false}

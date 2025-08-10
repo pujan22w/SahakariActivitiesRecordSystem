@@ -23,6 +23,7 @@ const AllData = () => {
   const filteredParticipants = participants.filter((p) =>
     p.fullName.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  // console.log(filteredParticipants);
 
   return (
     <div className="all-data-container">
@@ -41,36 +42,40 @@ const AllData = () => {
       {filteredParticipants.length === 0 ? (
         <p>No participants found.</p>
       ) : (
-        <table className="participants-table">
-          <thead>
-            <tr>
-              <th>Activity Name</th>
-              <th>Full Name</th>
-              <th>Age</th>
-              <th>Gender</th>
-              <th>Membership No.</th>
-              <th>Address</th>
-              <th>By Whom </th>
-              <th>Date</th>
-              <th>Phone</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredParticipants.map((p) => (
-              <tr key={p._id}>
-                <td>{p.activityName}</td>
-                <td>{p.fullName}</td>
-                <td>{p.age}</td>
-                <td>{p.gender}</td>
-                <td>{p.membershipNumber || "-"}</td>
-                <td>{p.address || "-"}</td>
-                <td>{p.byWhom || "-"} </td>
-                <td>{p.date ? new Date(p.date).toLocaleDateString() : "-"}</td>
-                <td>{p.phoneNumber || "-"}</td>
+        <div className="table-responsive">
+          <table className="participants-table">
+            <thead>
+              <tr>
+                <th>Activity Name</th>
+                <th>Full Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Membership No.</th>
+                <th>Address</th>
+                <th>By Whom </th>
+                <th>Date</th>
+                <th>Phone</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredParticipants.map((p) => (
+                <tr key={p._id}>
+                  <td>{p.masterActivityId?.activityName}</td>
+                  <td>{p.fullName}</td>
+                  <td>{p.age}</td>
+                  <td>{p.gender}</td>
+                  <td>{p.membershipNumber || "-"}</td>
+                  <td>{p.address || "-"}</td>
+                  <td>{p.byWhom || "-"} </td>
+                  <td>
+                    {p.date ? new Date(p.date).toLocaleDateString() : "-"}
+                  </td>
+                  <td>{p.phoneNumber || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

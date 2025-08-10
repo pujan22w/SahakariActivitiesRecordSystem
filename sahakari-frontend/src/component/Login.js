@@ -24,7 +24,13 @@ const Login = ({ setIsAuthenticated }) => {
       localStorage.setItem("token", token);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setIsAuthenticated(true);
-      navigate("/");
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      if (payload.role === "admin") {
+        navigate("/alldata");
+      } else {
+        navigate("/");
+      }
+
       toast.success("Login Successfull");
     } catch (err) {
       toast.error("Invalid username or password");

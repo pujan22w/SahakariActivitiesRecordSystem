@@ -1,0 +1,88 @@
+.admin-send-notification,
+.branch-notifications {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 25px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-send-notification h2,
+.branch-notifications h2 {
+  text-align: center;
+  color: #004a99;
+  margin-bottom: 20px;
+}
+
+.admin-send-notification form input,
+.admin-send-notification form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.admin-send-notification form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.branches-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.branches-list label {
+  background: #f1f1f1;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.admin-send-notification button {
+  background: #004a99;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  width: 100%;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.admin-send-notification button:hover {
+  background: #0062cc;
+}
+
+/* Branch Notification List */
+.branch-notifications ul {
+  list-style: none;
+  padding: 0;
+}
+
+.branch-notifications li {
+  background: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-left: 4px solid #004a99;
+  border-radius: 6px;
+}
+
+.branch-notifications li h4 {
+  margin: 0 0 5px 0;
+  color: #004a99;
+}
+
+.branch-notifications li small {
+  display: block;
+  margin-top: 5px;
+  color: #888;
+  font-size: 0.85rem;
+}
